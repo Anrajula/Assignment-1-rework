@@ -1,0 +1,123 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+
+"""Opening the file"""
+
+df = pd.read_csv('child_mortality.csv',sep=",",index_col="Country Name")
+
+df.head(8)
+
+"""Droppig the not required rows"""
+
+dropped_data =[]
+for i in  df.index.values:
+
+      if i not in ('France','Spain','Portugal','Estonia','Romania','Belarus'):
+
+        dropped_data.append(i)
+
+print(dropped_data)
+# dropped_data = [df.columns.get_loc(i) for i in dropped_data]
+df.drop(dropped_data, inplace = True)
+
+df.head(8)
+
+"""Drop unwanted columns"""
+
+#create my selection years
+years = []
+for yr in range(1990,2022):
+  years.append(str(yr))
+
+
+datas = []
+for data,items in df.items():
+  if data not in years:
+    datas.append(data)
+
+df = df.drop(datas,axis=1)
+
+
+df.head(8)
+
+"""Line code for the distribution"""
+
+#get the Y-Values
+
+countries = ['France','Spain','Portugal','Estonia','Romania','Belarus']
+
+y_dict = {}
+
+for c in countries:
+  y_dict[c] = []
+
+
+for i in years:
+  items = df[i].to_list()
+
+  for ctry in range(0,len(countries)):
+    y_dict[countries[ctry]].append(items[ctry])
+
+
+print(y_dict)
+
+"""Line plot"""
+
+x = years
+
+for i in y_dict:
+  plt.plot(x, y_dict.get(i), label=i)
+
+
+# Adding labels and title
+plt.xlabel('Years')
+plt.ylabel('Scale')
+plt.title('Distribution of child mortality in European')
+
+# Adding a legend
+plt.legend()
+
+# Display the plot
+plt.show()
+
+"""Other distributions
+
+Comparison Btn the values in the oldest and new year
+"""
+
+yr1990 = []
+yr2021 = []
+
+#print(y_dict)
+
+for each in y_dict:
+  yr1990.append(y_dict[each][0])
+  yr2021.append(y_dict[each][-1])
+
+print(yr2021)
+
+yvalues = yr1990
+countries = countries
+
+fig = plt.figure(figsize = (10, 5))
+
+# creating the bar plot
+plt.bar(countries, yvalues, color ='blue',
+        width = 0.4)
+
+plt.xlabel("Countries")
+plt.ylabel("Mortality cases")
+plt.title("Mortality cases in the year 1990 across the 6 countries")
+plt.show()
+
+"""pie chart for child mortality distribution in 2021"""
+
+#data to plot
+data = yr2021
+
+# Creating plot
+fig = plt.figure(figsize =(10, 7))
+plt.pie(data, labels = countries)
+
+# show plot
+plt.show()
